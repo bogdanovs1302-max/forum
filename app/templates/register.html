@@ -1,0 +1,14 @@
+<!DOCTYPE html>
+<html>
+<head><title>Регистрация</title></head>
+<body>
+    <h1>Регистрация</h1>
+    <form method="POST">
+        {{ form.hidden_tag() }}
+        <p>{{ form.username.label }}<br>{{ form.username() }}</p>
+        <p>{{ form.password.label }}<br>{{ form.password() }}</p>
+        <p>{{ form.submit() }}</p>
+    </form>
+    <a href="/login">Уже есть аккаунт? Войти</a>
+</body>
+</html>

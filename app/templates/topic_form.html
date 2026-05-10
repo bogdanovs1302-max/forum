@@ -1,0 +1,13 @@
+<!DOCTYPE html>
+<html>
+<head><title>Создать тему</title></head>
+<body>
+    <h1>Создать тему</h1>
+    <form method="POST">
+        {{ form.hidden_tag() }}
+        <p>{{ form.title.label }}<br>{{ form.title(size=50) }}</p>
+        <p>{{ form.submit() }}</p>
+    </form>
+    <a href="/">На главную</a>
+</body>
+</html>

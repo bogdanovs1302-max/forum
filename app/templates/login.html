@@ -1,0 +1,14 @@
+<!DOCTYPE html>
+<html>
+<head><title>Вход</title></head>
+<body>
+    <h1>Вход</h1>
+    <form method="POST">
+        {{ form.hidden_tag() }}
+        <p>{{ form.username.label }}<br>{{ form.username() }}</p>
+        <p>{{ form.password.label }}<br>{{ form.password() }}</p>
+        <p>{{ form.submit() }}</p>
+    </form>
+    <a href="/register">Нет аккаунта? Зарегистрироваться</a>
+</body>
+</html>

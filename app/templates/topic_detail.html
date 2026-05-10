@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>{{ topic.title }}</title>
+    <style>
+        body { font-family: Arial; padding: 20px; max-width: 800px; margin: 0 auto; }
+        .post { border-left: 3px solid #007bff; margin: 10px 0; padding: 10px; background: #f9f9f9; }
+        .post-meta { font-size: 12px; color: #666; margin-bottom: 5px; }
+        .delete-post { color: red; font-size: 12px; text-decoration: none; margin-left: 10px; }
+        .flash { padding: 10px; margin: 10px 0; border-radius: 5px; }
+        .success { background: #d4edda; color: #155724; }
+        .danger { background: #f8d7da; color: #721c24; }
+        .warning { background: #fff3cd; color: #856404; }
+        .banned-warning { background: #f8d7da; color: #721c24; padding: 10px; border-radius: 5px; margin: 10px 0; }
+    </style>
+</head>
+<body>
+    <h1>{{ topic.title }}</h1>
+    <p>Автор: {{ topic.author.username }}</p>
+    
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% for category, message in messages %}
+            <div class="flash {{ category }}">{{ message }}</div>
+        {% endfor %}
+    {% endwith %}
+    
+    {% if current_user.is_authenticated and current_user.is_banned %}
+        <div class="banned-warning">
+            ⚠️ Вы забанены. Вы можете только читать форум.
+        </div>
+    {% endif %}
+    
+    <h2>Посты в этой теме:</h2>
+    
+    {% if posts %}
+        {% for post in posts %}
+            <div class="post">
+                <div class="post-meta">
+                    <strong>{{ post.author.username }}</strong>
+                    {% if not current_user.is_banned and (current_user.role in ['admin', 'moderator'] or current_user.id == post.user_id) %}
+                        <a href="{{ url_for('delete_post', post_id=post.id) }}" class="delete-post" onclick="return confirm('Удалить пост?')">🗑️ Удалить</a>
+                    {% endif %}
+                </div>
+                <div>{{ post.content }}</div>
+            </div>
+        {% endfor %}
+    {% else %}
+        <p>Нет постов. Будьте первым!</p>
+    {% endif %}
+    
+    {% if current_user.is_authenticated %}
+        {% if current_user.is_banned %}
+            <p style="color: red;">🚫 Вы забанены и не можете писать посты</p>
+        {% else %}
+            <h3>Добавить пост</h3>
+            <form method="POST" action="{{ url_for('create_post', topic_id=topic.id) }}">
+                {{ form.hidden_tag() }}
+                {{ form.content(rows=3, cols=60) }}<br>
+                {{ form.submit() }}
+            </form>
+        {% endif %}
+    {% else %}
+        <p><a href="/login">Войдите</a> чтобы написать пост</p>
+    {% endif %}
+    
+    <p><a href="/">← На главную</a></p>
+</body>
+</html>

@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Управление пользователями</title>
+    <style>
+        body { font-family: Arial; padding: 20px; max-width: 1000px; margin: 0 auto; }
+        table { width: 100%; border-collapse: collapse; }
+        th, td { border: 1px solid #ddd; padding: 10px; text-align: left; }
+        th { background: #007bff; color: white; }
+        .banned { background: #f8d7da; color: #721c24; }
+        .btn { display: inline-block; padding: 5px 10px; margin: 2px; text-decoration: none; border-radius: 3px; }
+        .btn-ban { background: #dc3545; color: white; }
+        .btn-unban { background: #28a745; color: white; }
+        .btn-role { background: #007bff; color: white; }
+        .btn-back { background: #6c757d; color: white; }
+    </style>
+</head>
+<body>
+    <h1>👑 Управление пользователями</h1>
+    <p>Ваша роль: <strong>{{ current_user.role }}</strong></p>
+    
+    <table>
+        <tr>
+            <th>ID</th>
+            <th>Логин</th>
+            <th>Роль</th>
+            <th>Статус</th>
+            <th>Действия</th>
+        </tr>
+        {% for user in users %}
+        <tr {% if user.is_banned %}class="banned"{% endif %}>
+            <td>{{ user.id }}</td>
+            <td>{{ user.username }}</td>
+            <td>{{ user.role }}</td>
+            <td>{% if user.is_banned %}🔴 Забанен{% else %}✅ Активен{% endif %}</td>
+            <td>
+                {% if not user.is_banned and current_user.role in ['admin', 'moderator'] and user.id != current_user.id %}
+                    <a href="{{ url_for('ban_user', user_id=user.id) }}" class="btn btn-ban" onclick="return confirm('Забанить?')">🔨 Бан</a>
+                {% endif %}
+                {% if user.is_banned and current_user.role in ['admin', 'moderator'] %}
+                    <a href="{{ url_for('unban_user', user_id=user.id) }}" class="btn btn-unban">✅ Разбан</a>
+                {% endif %}
+                {% if current_user.role == 'admin' %}
+                    <a href="{{ url_for('set_role', user_id=user.id, role='user') }}" class="btn btn-role">👤 user</a>
+                    <a href="{{ url_for('set_role', user_id=user.id, role='moderator') }}" class="btn btn-role">🛡️ moderator</a>
+                    <a href="{{ url_for('set_role', user_id=user.id, role='admin') }}" class="btn btn-role">👑 admin</a>
+                {% endif %}
+            </td>
+        </tr>
+        {% endfor %}
+    </table>
+    <p><a href="/" class="btn-back">← На главную</a></p>
+</body>
+</html>
